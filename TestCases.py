@@ -45,7 +45,17 @@ class FirstTestCase(unittest.TestCase):
         self.driver.find_element_by_xpath("//div[@class='filters__primaryExtended']").click()
 
     def tearDown(self):
-        self.driver.close()
+        self.driver.quit()
+
+    def work_with_filters(self, checkboxtitle, asserttext):
+        xpathtext = "//label[@class='checkbox' and @title='" + checkboxtitle + "']"
+        checkbox = self.driver.find_element_by_xpath(xpathtext)
+        if not checkbox.is_selected():
+            checkbox.click()
+            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+
+        text = self.driver.find_element_by_class_name('mixedResults__header').text
+        self.assertEqual(asserttext, text)
 
     def test_has_site(self):
         """
@@ -55,10 +65,7 @@ class FirstTestCase(unittest.TestCase):
         отфильтровываются организации не имеющие сайта(их становится меньше)
         """
 
-        self.driver.find_element_by_xpath("//div[@class='filters__main']/div[3]/label[1]").click()
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
-        text = self.driver.find_element_by_class_name('mixedResults__header').text
-        self.assertEqual('621 организация', text)
+        self.work_with_filters('Есть сайт', '621 организация')
 
     def test_has_photos(self):
         """
@@ -68,10 +75,7 @@ class FirstTestCase(unittest.TestCase):
         отфильтровываются организации не имеющие фото(их становится меньше)
         """
 
-        self.driver.find_element_by_xpath("//div[@class='filters__main']/div[3]/label[2]").click()
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
-        text = self.driver.find_element_by_class_name('mixedResults__header').text
-        self.assertEqual('101 организация', text)
+        self.work_with_filters('Есть фото', '102 организации')
 
     def test_has_card(self):
         """
@@ -81,10 +85,7 @@ class FirstTestCase(unittest.TestCase):
         отфильтровываются организации не имеющие расчета по картам(их становится меньше)
         """
 
-        self.driver.find_element_by_xpath("//div[@class='filters__main']/div[3]/label[3]").click()
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
-        text = self.driver.find_element_by_class_name('mixedResults__header').text
-        self.assertEqual('263 организации', text)
+        self.work_with_filters('Расчёт по картам', '263 организации')
 
     def test_work_all_time(self):
         """
@@ -94,8 +95,9 @@ class FirstTestCase(unittest.TestCase):
         отфильтровываются организации не работающие круглосуточно(их становится меньше)
         """
 
-        self.driver.find_element_by_xpath("//div[@class='filters__workhours']/div/div/label[2]").click()
+        self.driver.find_element_by_xpath("//div[@class='radiogroup _workTimeModes']/label[2]").click()
         WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+
         text = self.driver.find_element_by_class_name('mixedResults__header').text
         self.assertEqual('13 организаций', text)
 
@@ -109,7 +111,7 @@ class FirstTestCase(unittest.TestCase):
         отфильтровываются организации не работающие в данное время(их становится меньше)
         """
 
-        self.driver.find_element_by_xpath("//div[@class='filters__workhours']/div/div/label[3]").click()
+        self.driver.find_element_by_xpath("//div[@class='radiogroup _workTimeModes']/label[3]").click()
         self.driver.find_element_by_xpath("//div[@class='radiogroup _week']/label[2]").click()
 
         action = ActionChains(self.driver)
@@ -117,6 +119,7 @@ class FirstTestCase(unittest.TestCase):
                                        self.slide_move(20, self.driver.find_element_by_class_name('filters__raderRunner')), 0).perform()
 
         WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+
         text = self.driver.find_element_by_class_name('mixedResults__header').text
         self.assertEqual('192 организации', text)
 
