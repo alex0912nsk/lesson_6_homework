@@ -51,12 +51,12 @@ class FirstTestCase(unittest.TestCase):
         filt = self.driver.find_element_by_xpath(filter_xpath)
         if not filt.is_selected():
             filt.click()
-            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
 
         if 0 < day < 8 and filter_xpath == "//label[@class='radiogroup__label'][3]":
-            self.driver.find_element_by_xpath("//div[@class='radiogroup _week']/label[" + str(day) + "]").click()
             WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+            self.driver.find_element_by_xpath("//div[@class='radiogroup _week']/label[" + str(day) + "]").click()
         if -1 < hour < 25 and filter_xpath == "//label[@class='radiogroup__label'][3]":
+            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
             action = ActionChains(self.driver)
             action.drag_and_drop_by_offset(self.driver.find_element_by_class_name('filters__raderRunnerIn'),
                                            self.slide_move(hour, self.driver.find_element_by_class_name('filters__raderRunner')), 0).perform()
