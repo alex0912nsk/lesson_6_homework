@@ -47,23 +47,25 @@ class FirstTestCase(unittest.TestCase):
     def tearDown(self):
         self.driver.quit()
 
-    def work_with_filters(self, filter_xpath, asserttext, day=None, hour=None):
+    def check_filter(self, filter_xpath):
         filt = self.driver.find_element_by_xpath(filter_xpath)
         if not filt.is_selected():
             filt.click()
 
-        if 0 < day < 8 and filter_xpath == "//label[@class='radiogroup__label'][3]":
-            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
-            self.driver.find_element_by_xpath("//div[@class='radiogroup _week']/label[" + str(day) + "]").click()
-        if -1 < hour < 25 and filter_xpath == "//label[@class='radiogroup__label'][3]":
-            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
-            action = ActionChains(self.driver)
-            action.drag_and_drop_by_offset(self.driver.find_element_by_class_name('filters__raderRunnerIn'),
-                                           self.slide_move(hour, self.driver.find_element_by_class_name('filters__raderRunner')), 0).perform()
-
+    def test_filter(self, asserttext):
         WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
         text = self.driver.find_element_by_class_name('mixedResults__header').text
         self.assertEqual(asserttext, text)
+
+    def select_day(self, day):
+        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+        self.driver.find_element_by_xpath("//div[@class='radiogroup _week']/label[" + str(day) + "]").click()
+
+    def select_hour(self, hour):
+        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+        action = ActionChains(self.driver)
+        action.drag_and_drop_by_offset(self.driver.find_element_by_class_name('filters__raderRunnerIn'),
+                                       self.slide_move(hour, self.driver.find_element_by_class_name('filters__raderRunner')), 0).perform()
 
     def test_has_site(self):
         """
@@ -72,8 +74,10 @@ class FirstTestCase(unittest.TestCase):
         Expected result:
         отфильтровываются организации не имеющие сайта(их становится меньше)
         """
-
-        self.work_with_filters("//label[@class='checkbox' and @title='Есть сайт']", '621 организация')
+        checkbox = "//label[@class='checkbox' and @title='Есть сайт']"
+        asserttext = '622 организации'
+        self.check_filter(checkbox)
+        self.test_filter(asserttext)
 
     def test_has_photos(self):
         """
@@ -83,7 +87,10 @@ class FirstTestCase(unittest.TestCase):
         отфильтровываются организации не имеющие фото(их становится меньше)
         """
 
-        self.work_with_filters("//label[@class='checkbox' and @title='Есть фото']", '102 организации')
+        checkbox = "//label[@class='checkbox' and @title='Есть фото']"
+        asserttext = '102 организации'
+        self.check_filter(checkbox)
+        self.test_filter(asserttext)
 
     def test_has_card(self):
         """
@@ -93,7 +100,10 @@ class FirstTestCase(unittest.TestCase):
         отфильтровываются организации не имеющие расчета по картам(их становится меньше)
         """
 
-        self.work_with_filters("//label[@class='checkbox' and @title='Расчет по картам']", '263 организации')
+        checkbox = "//label[@class='checkbox' and @title='Расчет по картам']"
+        asserttext = '263 организации'
+        self.check_filter(checkbox)
+        self.test_filter(asserttext)
 
     def test_work_all_time(self):
         """
@@ -103,7 +113,10 @@ class FirstTestCase(unittest.TestCase):
         отфильтровываются организации не работающие круглосуточно(их становится меньше)
         """
 
-        self.work_with_filters("//label[@class='radiogroup__label'][2]", '13 организаций')
+        checkbox = "//label[@class='radiogroup__label'][2]"
+        asserttext = '13 организаций'
+        self.check_filter(checkbox)
+        self.test_filter(asserttext)
 
     def test_work_select_time(self):
         """
@@ -115,7 +128,14 @@ class FirstTestCase(unittest.TestCase):
         отфильтровываются организации не работающие в данное время(их становится меньше)
         """
 
-        self.work_with_filters("//label[@class='radiogroup__label'][3]", '192 организации', 2, 20)
+        checkbox = "//label[@class='radiogroup__label'][3]"
+        asserttext = '193 организации'
+        week = 2
+        hour = 20
+        self.check_filter(checkbox)
+        self.select_day(week)
+        self.select_hour(hour)
+        self.test_filter(asserttext)
 
 if __name__ == "__main__":
     unittest.main()
