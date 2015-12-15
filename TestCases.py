@@ -20,10 +20,11 @@ class FirstTestCase(unittest.TestCase):
         340 - ширина слайдера
         """
 
+        width = 340
         position = slider.get_attribute('style')
         length = len(position)
         position = float(position[6:length - 2])
-        return 340 * (hour / 24 - position / 100)
+        return width * (hour / 24 - position / 100)
 
     def setUp(self):
         """
@@ -54,18 +55,23 @@ class FirstTestCase(unittest.TestCase):
 
     def test_filter(self, asserttext):
         WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+
         text = self.driver.find_element_by_class_name('mixedResults__header').text
         self.assertEqual(asserttext, text)
 
     def select_day(self, day):
         WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
-        self.driver.find_element_by_xpath("//div[@class='radiogroup _week']/label[" + str(day) + "]").click()
+
+        day_xpath = "//div[@class='radiogroup _week']/label[" + str(day) + "]"
+        self.driver.find_element_by_xpath(day_xpath).click()
 
     def select_hour(self, hour):
         WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+
         action = ActionChains(self.driver)
-        action.drag_and_drop_by_offset(self.driver.find_element_by_class_name('filters__raderRunnerIn'),
-                                       self.slide_move(hour, self.driver.find_element_by_class_name('filters__raderRunner')), 0).perform()
+        rader_runner = self.driver.find_element_by_class_name('filters__raderRunner')
+        rader_runner_in = self.driver.find_element_by_class_name('filters__raderRunnerIn')
+        action.drag_and_drop_by_offset(rader_runner_in, self.slide_move(hour, rader_runner), 0).perform()
 
     def test_has_site(self):
         """
