@@ -26,6 +26,9 @@ class FirstTestCase(unittest.TestCase):
         position = float(position[6:length - 2])
         return width * (hour / 24 - position / 100)
 
+    def wait_load(self):
+        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+
     def setUp(self):
         """
         Preconditions:
@@ -54,19 +57,19 @@ class FirstTestCase(unittest.TestCase):
             filt.click()
 
     def test_filter(self, asserttext):
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+        self.wait_load()
 
         text = self.driver.find_element_by_class_name('mixedResults__header').text
         self.assertEqual(asserttext, text)
 
     def select_day(self, day):
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+        self.wait_load()
 
         day_xpath = "//div[@class='radiogroup _week']/label[" + str(day) + "]"
         self.driver.find_element_by_xpath(day_xpath).click()
 
     def select_hour(self, hour):
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.CLASS_NAME, 'dataViewer__frames')))
+        self.wait_load()
 
         action = ActionChains(self.driver)
         rader_runner = self.driver.find_element_by_class_name('filters__raderRunner')
