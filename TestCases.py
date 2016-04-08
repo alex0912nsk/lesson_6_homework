@@ -84,7 +84,7 @@ class FirstTestCase(unittest.TestCase):
         отфильтровываются организации не имеющие сайта(их становится меньше)
         """
         checkbox = "//label[@class='checkbox' and @title='Есть сайт']"
-        asserttext = '622 организации'
+        asserttext = '623 организации'
         self.check_filter(checkbox)
         self.test_filter(asserttext)
 
