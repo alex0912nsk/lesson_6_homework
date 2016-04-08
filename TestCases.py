@@ -39,7 +39,7 @@ class FirstTestCase(unittest.TestCase):
 
         self.driver = webdriver.Firefox()
         self.driver.implicitly_wait(20)
-        self.driver.get('2gis.ru')
+        self.driver.get('https://2gis.ru')
 
         action = ActionChains(self.driver)
         action.send_keys('компьютеры')
